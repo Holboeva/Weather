@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🌍 Weather Forecast</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.lordicon.com/lordicon.js"></script>
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(to bottom right, #ffe4ec, #e0f7fa);
+      margin: 0;
+      padding: 0;
+      color: #444;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 3.5em;
+      color: #ff69b4;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+      position: relative;
+    }
+
+    h1:hover {
+      transform: scale(1.1);
+    }
+
+    h1::after {
+      content: "✨";
+      animation: sparkle 2s infinite;
+      margin-left: 10px;
+    }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: 0; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.4); }
+    }
+
+    .search-bar input {
+      padding: 14px 20px;
+      width: 70%;
+      font-size: 18px;
+      border-radius: 12px;
+      border: 2px solid #ff69b4;
+      background: linear-gradient(145deg, #fff0f7, #ffe4ec);
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      box-shadow: inset 2px 2px 6px #ffc1e3, inset -2px -2px 6px #fff;
+    }
+
+    .search-bar input:focus {
+      border-color: #ff4081;
+      box-shadow: 0 0 10px rgba(255, 64, 129, 0.5);
+    }
+
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #ffb6c1;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      cursor: pointer;
+      font-size: 16px;
+      color: #333;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .dropdown:hover {
+      background-color: #f48fb1;
+      transform: scale(1.05);
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #f8bbd0;
+      border-radius: 10px;
+      width: 160px;
+      z-index: 1;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .dropdown-content button {
+      background: #f8bbd0;
+      border: none;
+      padding: 12px;
+      text-align: left;
+      font-size: 16px;
+      width: 100%;
+      color: #333;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dropdown-content button:hover {
+      background-color: #f48fb1;
+      box-shadow: 0 0 10px #ff69b4, 0 0 20px #ff69b4;
+      transform: scale(1.05);
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 182, 193, 0.4);
+      border-radius: 20px;
+      padding: 25px;
+      width: 280px;
+      box-shadow: 0 20px 40px rgba(255, 182, 193, 0.5);
+      position: relative;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      animation: cardHover 0.5s ease-out;
+    }
+
+    @keyframes cardHover {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 25px 50px rgba(255, 182, 193, 0.4);
+    }
+
+    .card h2 {
+      margin: 0;
+      color: #ff4081;
+      font-size: 1.8em;
+      transition: color 0.3s ease;
+    }
+
+    .card:hover h2 {
+      color: #e91e63;
+    }
+
+    .card p {
+      margin: 5px 0;
+      font-size: 16px;
+    }
+
+    .card img.flag {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin: 10px 0;
+    }
+
+    .weather {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-weight: bold;
+      color: #00796b;
+      margin-top: 10px;
+    }
+
+    .weather img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #f478b2, #f293b0);
+        padding: 6px;
+        box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.7);
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover .weather img {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+
+    .extra-info {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease, opacity 0.5s ease;
+      opacity: 0;
+    }
+
+    .card.open .extra-info {
+      max-height: 200px;
+      opacity: 1;
+      margin-top: 10px;
+    }
+
+    .favorite {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      cursor: pointer;
+      font-size: 22px;
+      color: #ddd;
+      transition: color 0.3s ease;
+    }
+
+    .favorite.active {
+      color: #ff4081;
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .details {
+      display: none;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .card.expanded .details {
+      display: block;
+    }
+
+    a {
+      text-decoration: none;
+      color: #ff4081;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+
+    a:hover {
+      color: #e91e63;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌸 Girls Weather Forecast</h1>
+    <div class="search-bar">
+      <input type="text" id="search" placeholder="Search for a country or capital..." onkeyup="searchCountry()">
+    </div>
+    <div class="cards" id="cards-container">
+      {% for country in countries %}
+      <div class="card" onclick="toggleCard(this)">
+        <div class="favorite" onclick="toggleFavorite(event, this)">💖</div>
+        <h2>{{ country.name }}</h2>
+        <p><strong>Capital:</strong> {{ country.capital }}</p>
+        <p><strong>Population:</strong> {{ country.population }}</p>
+        <img src="{{ country.flag_url }}" alt="Flag" class="flag" onerror="this.style.display='none'">
+        <div class="weather">
+        <img src="{{ country.weather.icon }}" alt="Weather icon">
+          <span>{{ country.weather.temperature }}°C >💵, {{ country.weather.description }}</span>
+        </div>
+        <div class="extra-info">
+          <p><a href="{{ country.wikipedia_link }}" target="_blank">📚 Wikipedia</a></p>
+          <p><a href="{{ country.youtube_link }}" target="_blank">📹 YouTube</a></p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="dropdown">
+      Sort By
+      <div class="dropdown-content">
+        <button onclick="sortCards('name', 'asc')">🔤 Name A-Z</button>
+        <button onclick="sortCards('name', 'desc')">🔡 Name Z-A</button>
+        <button onclick="sortCards('capital', 'asc')">🏛️ Capital A-Z</button>
+        <button onclick="sortCards('capital', 'desc')">🏛️ Capital Z-A</button>
+        <button onclick="sortCards('population', 'asc')">📉 Population Low</button>
+        <button onclick="sortCards('population', 'desc')">📈 Population High</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function searchCountry() {
+      const input = document.getElementById('search').value.toLowerCase();
+      const cards = document.getElementsByClassName('card');
+      for (let card of cards) {
+        const name = card.getElementsByTagName('h2')[0].innerText.toLowerCase();
+        const capital = card.getElementsByTagName('p')[0].innerText.toLowerCase();
+        card.style.display = name.includes(input) || capital.includes(input) ? 'block' : 'none';
+      }
+    }
+
+    function toggleCard(card) {
+      card.classList.toggle('open');
+    }
+
+    function toggleFavorite(event, icon) {
+      event.stopPropagation();
+      icon.classList.toggle('active');
+      const countryName = icon.parentElement.querySelector('h2').innerText;
+      let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+
+      if (icon.classList.contains('active')) {
+        favorites.push(countryName);
+      } else {
+        favorites = favorites.filter(name => name !== countryName);
+      }
+
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+    }
+
+    function sortCards(type, order) {
+      const container = document.getElementById('cards-container');
+      const cards = Array.from(container.getElementsByClassName('card'));
+      cards.sort((a, b) => {
+        let aValue, bValue;
+        if (type === "name") {
+          aValue = a.getElementsByTagName("h2")[0].innerText.toLowerCase();
+          bValue = b.getElementsByTagName("h2")[0].innerText.toLowerCase();
+        } else if (type === "capital") {
+          aValue = a.getElementsByTagName("p")[0].innerText.toLowerCase();
+          bValue = b.getElementsByTagName("p")[0].innerText.toLowerCase();
+        } else if (type === "population") {
+          aValue = parseInt(a.getElementsByTagName("p")[1].innerText.replace(/\D/g, ""));
+          bValue = parseInt(b.getElementsByTagName("p")[1].innerText.replace(/\D/g, ""));
+        }
+        return order === "asc" ? (aValue > bValue ? 1 : -1) : (aValue < bValue ? 1 : -1);
+      });
+      container.innerHTML = "";
+      cards.forEach(card => container.appendChild(card));
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+      const cards = document.getElementsByClassName('card');
+      for (let card of cards) {
+        const name = card.querySelector('h2').innerText;
+        if (favorites.includes(name)) {
+          card.querySelector('.favorite').classList.add('active');
+        }
+      }
+    });
+  </script>
+</body>
+</html>
